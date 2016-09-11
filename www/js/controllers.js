@@ -1,31 +1,31 @@
-angular.module('starter.controllers', ['ngCordova'])
+angular.module('starter.controllers', ['ngCordova', 'ionic'])
 
 .controller('DashCtrl', function($scope) {})
 
-.controller('TriviaCtrl', function($scope, $rootScope, $state, $ionicModal, $ionicPlatform, $cordovaVibration, $cordovaNativeAudio) {
+.controller('TriviaCtrl', function($scope, $interval, $rootScope, $state, $ionicModal, $ionicPlatform, $cordovaVibration, $cordovaNativeAudio, $ionicModal, $timeout) {
   var mediaWin = null;
   var mediaLoose = null;
   
+  $scope.misPreguntas = [];
+
   $scope.trivia = {};
 
-  $scope.trivia.pregunta = '¿De qué color es el caballo blanco de San Martin?'
+  $scope.trivia.pregunta;
   $scope.trivia.respuestas = [];
+  var pregNro = 0;
 
-  $scope.trivia.respuestas[0] = {};
-  $scope.trivia.respuestas[1] = {};
-  $scope.trivia.respuestas[2] = {};
-  $scope.trivia.respuestas[3] = {};
+  var triviaFirebase = new Firebase('https://triviaapp-bfaf2.firebaseio.com/preguntas/');
+  triviaFirebase.on('child_added', function(snapshot) {
+    $timeout(function(){
+      var pregunta = snapshot.val();
+      $scope.misPreguntas.push(pregunta);
 
-  $scope.trivia.respuestas[0].texto = 'Negro';
-  $scope.trivia.respuestas[1].texto = 'Moteado';
-  $scope.trivia.respuestas[2].texto = 'Blanco';
-  $scope.trivia.respuestas[3].texto = 'Marron'; 
-
-  $scope.trivia.respuestas[0].correcto = false;
-  $scope.trivia.respuestas[1].correcto = false;
-  $scope.trivia.respuestas[2].correcto = true;
-  $scope.trivia.respuestas[3].correcto = false; 
+      $scope.trivia.pregunta = $scope.misPreguntas[pregNro].pregunta;
+      $scope.trivia.respuestas = $scope.misPreguntas[pregNro].respuestas;
   
+    })
+  })
+
   try{
     $ionicPlatform.ready(function(){
       /*
@@ -69,7 +69,43 @@ angular.module('starter.controllers', ['ngCordova'])
             $cordovaVibration.vibrate([100, 100, 100]);
             //$cordovaNativeAudio.play('loose');
           }
-      }
+
+
+          $interval(function(){
+            console.log('entra en el timeout');
+            if(pregNro < $scope.trivia.respuestas.length){
+              pregNro++;
+              for(var i=0; i<$scope.trivia.respuestas.length; i++){
+                $scope.trivia.respuestas[i].seleccionado="";
+              }
+            }
+          }, 200);
+
+/*          $ionicModal.fromTemplateUrl('next-modal.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+          }).then(function(modal) {
+            $scope.modal = modal;
+          });
+          $scope.openModal = function() {
+            $scope.modal.show();
+          };
+          $scope.closeModal = function() {
+            $scope.modal.hide();
+          };
+          // Cleanup the modal when we're done with it!
+          $scope.$on('$destroy', function() {
+            $scope.modal.remove();
+          });
+          // Execute action on hide modal
+          $scope.$on('modal.hidden', function() {
+            // Execute action
+          });
+          // Execute action on remove modal
+          $scope.$on('modal.removed', function() {
+            // Execute action
+          });
+*/      }
       catch(err){
         alert(err.message);
       }
@@ -91,6 +127,8 @@ angular.module('starter.controllers', ['ngCordova'])
   };
 })
 
-.controller('AuthorCtrl', function($scope) {
-
+.controller('AuthorCtrl', function($scope, $window) {
+  $scope.sendMail = function(emailId, subject, message){
+    $window.open("mailto:" + emailId + "?subject=" + subject+"&body="+message,"_self");
+  }
 });

@@ -1,8 +1,8 @@
-<ion-view view-title="Pregunta 1">
+<ion-view view-title="Pregunta {{preg-nro}}">
   <ion-content>
     <div class="pregunta" ng-bind="trivia.pregunta"></div>
     <div class="respuestas">
       <button class="button button-block button-stable rta" ng-repeat="rta in trivia.respuestas" ng-bind="rta.texto" ng-click="elegirRespuesta($index)" ng-class="rta.seleccionado"></button>
     </div>
   </ion-content>
-</ion-view>
+</ion-view>s

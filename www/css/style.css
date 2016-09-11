@@ -2,10 +2,6 @@
 h1, h2{
 	color:#CEF6EC;
 }
-.author-name, .author-github, .author-email{
-	font-size:2.5rem;
-	font-family:garamond;
-}
 .bien{
 	background-color:#58FA82 !important;
 }
@@ -21,13 +17,16 @@ h1, h2{
 	display:table-block;
 	margin-top:15%;
 	margin-bottom:10%;
-	line-height:3rem;
+	font-size:2rem;
+	font-family:garamond;
+	line-height:2.5rem;
 }
 div.pregunta{
 	width: 98%;
 	background-color:#CEECF5;
 	color:#585858;
-	font: verdana 1.5rem;
+	font-family: verdana;
+	font-size: 1.05rem;
 	margin: 1%;
 	text-align: center;
 	padding: 20px;
@@ -45,7 +44,7 @@ ion-content{
 .bar-stable.bar-header, div.tab-nav.tabs{
 	background-color:#086A87;
 }
-div.title.title-center.header-item, div.tab-nav.tabs i, div.tab-nav.tabs span{
+div.title.title-center.header-item, ion-header-bar, div.tab-nav.tabs i, div.tab-nav.tabs span{
 	color:white;
 }
 button.rta{
