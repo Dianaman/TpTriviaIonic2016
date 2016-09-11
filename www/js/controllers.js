@@ -15,7 +15,7 @@ angular.module('starter.controllers', ['ngCordova'])
 
   $scope.elegirIncorrecto = function(){
     try{
-      $cordovaVibration.vibrate(100, 100);
+      $cordovaVibration.vibrate([100, 100, 100]);
     }
     catch(err){
       console.log(err.message);
