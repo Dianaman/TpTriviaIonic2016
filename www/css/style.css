@@ -32,11 +32,21 @@ div.pregunta{
 	padding: 20px;
 	margin-bottom:10%;
 }
-div.respuestas{
-	width:98%;
-	margin-left:1%;
-	margin-right:1%;
+@media(min-width: 600px){
+	div.respuestas{
+		width:98%;
+		margin-left:1%;
+		margin-right:1%;
+	}
 }
+@media(max-width: 600px){
+	div.respuestas button{
+		margin:1%;
+		width:48%;
+		display:inline-block;
+	}
+}
+
 ion-content{
 	background: url('../img/clouds.jpg') fixed #00BFFF;
 	color:snow;
@@ -44,8 +54,9 @@ ion-content{
 .bar-stable.bar-header, div.tab-nav.tabs{
 	background-color:#086A87;
 }
-div.title.title-center.header-item, ion-header-bar, div.tab-nav.tabs i, div.tab-nav.tabs span{
+div.title.title-center.header-item, ion-header-bar, div.tab-nav.tabs i, div.tab-nav.tabs span, .bar.bar-stable .title{
 	color:white;
+	text-align: center;
 }
 button.rta{
 	opacity:0.8;

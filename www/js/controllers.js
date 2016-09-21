@@ -71,15 +71,18 @@ angular.module('starter.controllers', ['ngCordova', 'ionic'])
           }
 
 
-          $interval(function(){
+          $timeout(function(){
             console.log('entra en el timeout');
             if(pregNro < $scope.trivia.respuestas.length){
               pregNro++;
               for(var i=0; i<$scope.trivia.respuestas.length; i++){
                 $scope.trivia.respuestas[i].seleccionado="";
               }
+
+      $scope.trivia.pregunta = $scope.misPreguntas[pregNro].pregunta;
+      $scope.trivia.respuestas = $scope.misPreguntas[pregNro].respuestas;
             }
-          }, 200);
+          }, 400);
 
 /*          $ionicModal.fromTemplateUrl('next-modal.html', {
             scope: $scope,
