@@ -2,7 +2,7 @@ angular.module('starter.controllers', ['ngCordova', 'ionic'])
 
 .controller('DashCtrl', function($scope) {})
 
-.controller('TriviaCtrl', function($scope, $interval, $rootScope, $state, $ionicModal, $ionicPlatform, $cordovaVibration, $cordovaNativeAudio, $ionicModal, $timeout) {
+.controller('TriviaCtrl', function($scope, $rootScope, $state, $ionicModal, $ionicPlatform, $cordovaVibration, $cordovaNativeAudio, $ionicModal, $timeout) {
   var mediaWin = null;
   var mediaLoose = null;
   
@@ -28,9 +28,9 @@ angular.module('starter.controllers', ['ngCordova', 'ionic'])
 
   try{
     $ionicPlatform.ready(function(){
-      /*
-      mediaWin = $cordovaMedia.newMedia("/sounds/correcto.mp3", null, null, null);
-      mediaLoose = $cordovaMedia.newMedia("/sounds/incorrecto.mp3", null,null, null);
+/*      
+      mediaWin = $cordovaMedia.newMedia("/sounds/correcto.mp3");
+      mediaLoose = $cordovaMedia.newMedia("/sounds/incorrecto.mp3");
 
       mediaWin.then(function(){
         alert("success");
@@ -42,13 +42,26 @@ angular.module('starter.controllers', ['ngCordova', 'ionic'])
         alert("success");
       }, function(){
         alert("error");
-      });*/
-      /*
-      $cordovaNativeAudio
-        .preloadSimple('loose', 'sounds/incorrecto.mp3');
-
+      });
 */
+      $cordovaNativeAudio
+      .preloadSimple('loose', 'sounds/incorrecto.mp3')
+      .then(function (msg) {
+        console.log(msg);
+      }, function (error) {
+        alert(error);
+      });
+
+      $cordovaNativeAudio
+      .preloadSimple('win', 'sounds/correcto.mp3')
+      .then(function (msg) {
+        console.log(msg);
+      }, function (error) {
+        alert(error);
+      });
+
     })
+
     $scope.elegirRespuesta = function(selected){
       try{
           if($scope.trivia.respuestas[selected].correcto == true){
@@ -56,6 +69,7 @@ angular.module('starter.controllers', ['ngCordova', 'ionic'])
             $scope.trivia.respuestas[selected].seleccionado="bien";
 
             $cordovaVibration.vibrate(100); 
+            $cordovaNativeAudio.play('win');
           }
           else {
             console.log('respuesta incorrecta');
@@ -67,7 +81,7 @@ angular.module('starter.controllers', ['ngCordova', 'ionic'])
             }
 
             $cordovaVibration.vibrate([100, 100, 100]);
-            //$cordovaNativeAudio.play('loose');
+            $cordovaNativeAudio.play('loose');
           }
 
 
