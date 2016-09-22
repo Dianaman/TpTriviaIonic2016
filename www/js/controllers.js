@@ -1,6 +1,27 @@
 angular.module('starter.controllers', ['ngCordova', 'ionic'])
 
-.controller('DashCtrl', function($scope) {})
+.run(function($rootScope){
+  $rootScope.usuario = {};
+  $rootScope.usuario.name;
+  $rootScope.usuario.trivia = [];
+})
+
+.controller('LoginCtrl', function($scope, $state, $rootScope){
+$scope.datos = {
+  'username': ''
+}
+
+  $scope.entrar = function(){
+    $rootScope.usuario.name = $scope.datos.username;
+    $state.go('tab.dash');
+  }
+})
+
+.controller('DashCtrl', function($scope, $rootScope) {
+  $scope.datos = {};
+
+  $scope.datos.nombre = $rootScope.usuario.name;
+})
 
 .controller('TriviaCtrl', function($scope, $rootScope, $state, $ionicModal, $ionicPlatform, $cordovaVibration, $cordovaNativeAudio, $ionicModal, $timeout) {
   var mediaWin = null;
@@ -28,22 +49,7 @@ angular.module('starter.controllers', ['ngCordova', 'ionic'])
 
   try{
     $ionicPlatform.ready(function(){
-/*      
-      mediaWin = $cordovaMedia.newMedia("/sounds/correcto.mp3");
-      mediaLoose = $cordovaMedia.newMedia("/sounds/incorrecto.mp3");
 
-      mediaWin.then(function(){
-        alert("success");
-      }, function(){
-        alert("error");
-      });
-
-      mediaLoose.then(function(){
-        alert("success");
-      }, function(){
-        alert("error");
-      });
-*/
       $cordovaNativeAudio
       .preloadSimple('loose', 'sounds/incorrecto.mp3')
       .then(function (msg) {
@@ -62,6 +68,9 @@ angular.module('starter.controllers', ['ngCordova', 'ionic'])
 
     })
 
+    var correcto;
+    var cantCorrectas = 0;
+
     $scope.elegirRespuesta = function(selected){
       try{
           if($scope.trivia.respuestas[selected].correcto == true){
@@ -70,6 +79,10 @@ angular.module('starter.controllers', ['ngCordova', 'ionic'])
 
             $cordovaVibration.vibrate(100); 
             $cordovaNativeAudio.play('win');
+
+            correcto = $scope.trivia.respuestas[selected].texto;
+
+            cantCorrectas ++;
           }
           else {
             console.log('respuesta incorrecta');
@@ -77,6 +90,7 @@ angular.module('starter.controllers', ['ngCordova', 'ionic'])
             for(var i=0; i<$scope.trivia.respuestas.length; i++){
               if($scope.trivia.respuestas[i].correcto == true){
                 $scope.trivia.respuestas[i].seleccionado="bien";
+                correcto = $scope.trivia.respuestas[i].texto;
               }
             }
 
@@ -84,45 +98,30 @@ angular.module('starter.controllers', ['ngCordova', 'ionic'])
             $cordovaNativeAudio.play('loose');
           }
 
+          $rootScope.usuario.trivia.push({
+            pregunta: $scope.trivia.pregunta,
+            correcta: correcto,
+            seleccionado: $scope.trivia.respuestas[selected].texto
+          });
 
           $timeout(function(){
             console.log('entra en el timeout');
-            if(pregNro < $scope.trivia.respuestas.length){
+            if(pregNro < $scope.misPreguntas.length-1){
               pregNro++;
               for(var i=0; i<$scope.trivia.respuestas.length; i++){
                 $scope.trivia.respuestas[i].seleccionado="";
               }
 
-      $scope.trivia.pregunta = $scope.misPreguntas[pregNro].pregunta;
-      $scope.trivia.respuestas = $scope.misPreguntas[pregNro].respuestas;
+              $scope.trivia.pregunta = $scope.misPreguntas[pregNro].pregunta;
+              $scope.trivia.respuestas = $scope.misPreguntas[pregNro].respuestas;
+            }
+            else {
+              $rootScope.usuario.puntaje = cantCorrectas + '/'+(parseInt(pregNro) +1).toString();
+              $state.go('tab.final');
             }
           }, 400);
 
-/*          $ionicModal.fromTemplateUrl('next-modal.html', {
-            scope: $scope,
-            animation: 'slide-in-up'
-          }).then(function(modal) {
-            $scope.modal = modal;
-          });
-          $scope.openModal = function() {
-            $scope.modal.show();
-          };
-          $scope.closeModal = function() {
-            $scope.modal.hide();
-          };
-          // Cleanup the modal when we're done with it!
-          $scope.$on('$destroy', function() {
-            $scope.modal.remove();
-          });
-          // Execute action on hide modal
-          $scope.$on('modal.hidden', function() {
-            // Execute action
-          });
-          // Execute action on remove modal
-          $scope.$on('modal.removed', function() {
-            // Execute action
-          });
-*/      }
+      }
       catch(err){
         alert(err.message);
       }
@@ -134,14 +133,86 @@ angular.module('starter.controllers', ['ngCordova', 'ionic'])
 
 
 })
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-  $scope.chat = Chats.get($stateParams.chatId);
+
+.controller('FinalCtrl', function($scope, $rootScope, $ionicPlatform, $cordovaFile) {
+  $scope.datos = {};
+
+  $scope.datos.nombre = $rootScope.usuario.name;
+  $scope.datos.puntaje = $rootScope.usuario.puntaje;
+  $scope.datos.puntuacion;
+
+  var data = {usuario:$scope.datos.nombre, trivia:$rootScope.usuario.trivia, puntaje: $scope.datos.puntaje};
+
+  $ionicPlatform.ready(function(){
+      $cordovaFile.createFile(cordova.file.dataDirectory, "trivia.txt", true) 
+      .then(function (success) {
+          $cordovaFile.writeFile(cordova.file.dataDirectory, "trivia.txt", data, true)
+          .then(function (success) {
+            console.log("Se escribió correctamente");
+            $cordovaFile.readAsText(cordova.file.dataDirectory, "trivia.txt")
+              .then(function (success) {
+                alert(success);
+                $scope.datos.puntuacion = success;
+              }, function (error) {
+                alert("Error al leer");
+              });
+          }, function (error) {
+            alert("Error al escribir");
+          });
+      }, function (error) {
+          alert("Error al crear el archivo");
+      });
+  })
+
+  $scope.enviar = function(){
+    
+      var triviaFirebase = new Firebase('https://triviaapp-bfaf2.firebaseio.com/puntuaciones/');
+      triviaFirebase.push(data, function(error){
+        if(error == null){
+          alert('envio');
+        }
+        else{
+          alert(error);
+        }
+      });
+  }
 })
 
-.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
+.controller('RankingCtrl', function($scope, $ionicPlatform, $cordovaFile, $timeout){
+    $scope.puntuaciones = [];
+
+    var triviaFirebase = new Firebase('https://triviaapp-bfaf2.firebaseio.com/puntuaciones/');
+    triviaFirebase.on('child_added', function(snapshot) {
+      $timeout(function(){
+        var puntuaciones = snapshot.val();
+        $scope.puntuaciones.push(pregunta);
+      })
+    })
+
+
+  $scope.archivo = {};
+
+  try{
+    $ionicPlatform.ready(function() {
+
+      $cordovaFile.checkFile(cordova.file.dataDirectory, "trivia.txt")
+        .then(function (success) {
+            $cordovaFile.readAsText(cordova.file.dataDirectory, "trivia.txt")
+            .then(function (success) {
+              $scope.archivo.puntaje = success;
+            }, function (error) {
+              $scope.archivo.error = "Error al leer";
+            });
+        }, function (error) {
+          $scope.archivo.error = 'No hay ningun juego guardado';
+        });
+
+
+    });
+  }
+  catch(ex){
+    $scope.archivo.error = ex.message;
+  }
 })
 
 .controller('AuthorCtrl', function($scope, $window) {

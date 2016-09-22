@@ -40,6 +40,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
   // Each tab has its own nav history stack:
 
+  .state('tab.login', {
+    url: '/login',
+    views: {
+      'tab-login': {
+        templateUrl: 'templates/tab-login.html',
+        controller: 'LoginCtrl'
+      }
+    }
+  })
+
   .state('tab.dash', {
     url: '/dash',
     views: {
@@ -78,6 +88,26 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       }
     }
   })
+ 
+  .state('tab.final', {
+    url: '/final',
+    views: {
+      'tab-final': {
+        templateUrl: 'templates/tab-final.html',
+        controller: 'FinalCtrl'
+      }
+    }
+  })
+
+  .state('tab.ranking', {
+    url: '/ranking',
+    views: {
+      'tab-ranking': {
+        templateUrl: 'templates/tab-ranking.html',
+        controller: 'RankingCtrl'
+      }
+    }
+  })
 
   .state('tab.author', {
     url: '/author',
@@ -91,6 +121,18 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+  $urlRouterProvider.otherwise('/tab/login');
 
+})
+
+.directive('hideTabs', function($rootScope) {
+  return {
+      restrict: 'A',
+      link: function($scope, $el) {
+          $rootScope.hideTabs = 'tabs-item-hide';
+          $scope.$on('$destroy', function() {
+              $rootScope.hideTabs = '';
+          });
+      }
+  };
 });

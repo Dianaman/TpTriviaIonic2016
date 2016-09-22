@@ -1,0 +1,14 @@
+<ion-view view-title="login" cache-view="false"  hide-tabs>
+  <ion-content>
+  <form name="FormIngreso">
+	<ion-list>
+	  <ion-item>
+	    <input type="text" placeholder="Username" ng-model="datos.username" required minlength="3"></input>
+	  </ion-item>
+  	</ion-list>
+  	</form>
+    <button class="button button-full button-royal" ng-click="entrar()" ng-disabled="FormIngreso.$invalid">
+      Entrar
+    </button>
+  </ion-content>
+</ion-view>
