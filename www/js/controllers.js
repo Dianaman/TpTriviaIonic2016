@@ -184,8 +184,8 @@ $scope.datos = {
     var triviaFirebase = new Firebase('https://triviaapp-bfaf2.firebaseio.com/puntuaciones/');
     triviaFirebase.on('child_added', function(snapshot) {
       $timeout(function(){
-        var puntuaciones = snapshot.val();
-        $scope.puntuaciones.push(pregunta);
+        var puntuacion = snapshot.val();
+        $scope.puntuaciones.push(puntuacion);
       })
     })
 
